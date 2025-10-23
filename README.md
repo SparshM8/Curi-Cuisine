@@ -68,8 +68,3 @@
 - [Strategic Report](curi-cuisine/STRATEGIC_REPORT.md)
 - [Frontend Quick Start](curi-cuisine/README.md)
 - [How to Get Your API Key](GET_API_KEY.md)
-
----
-
-## 📝 License
-MIT
