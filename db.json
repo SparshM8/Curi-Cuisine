@@ -1,0 +1,80 @@
+{
+  "ingredients": [
+    {
+      "id": "apple",
+      "name": "Apple",
+      "category": "Fruit"
+    },
+    {
+      "id": "banana",
+      "name": "Banana",
+      "category": "Fruit"
+    },
+    {
+      "id": "chicken_breast",
+      "name": "Chicken Breast",
+      "category": "Meat"
+    },
+    {
+      "id": "carrot",
+      "name": "Carrot",
+      "category": "Vegetable"
+    },
+    {
+      "id": "rice",
+      "name": "Rice",
+      "category": "Pantry"
+    },
+    {
+      "id": "olive_oil",
+      "name": "Olive Oil",
+      "category": "Pantry"
+    },
+    {
+      "id": "garlic",
+      "name": "Garlic",
+      "category": "Vegetable"
+    },
+    {
+      "id": "onion",
+      "name": "Onion",
+      "category": "Vegetable"
+    },
+    {
+      "id": "tomato",
+      "name": "Tomato",
+      "category": "Pantry"
+    },
+    {
+      "id": "mustard_oil",
+      "name": "Mustard Oil",
+      "category": "Pantry"
+    },
+    {
+      "id": "orange",
+      "name": "Orange",
+      "category": "Pantry"
+    },
+    {
+      "id": "potato",
+      "name": "potato",
+      "category": "Pantry"
+    },
+    {
+      "id": "soya_bean",
+      "name": "Soya Bean",
+      "category": "Pantry"
+    },
+    {
+      "id": "chilli",
+      "name": "Chilli",
+      "category": "Pantry"
+    }
+  ],
+  "statistics": {
+    "mealsSaved": 0,
+    "wasteReduced": 0,
+    "recipesTried": 0
+  },
+  "recipes": []
+}

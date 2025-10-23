@@ -1,0 +1,20 @@
+{
+  "name": "curi-cuisine-root",
+  "private": true,
+  "scripts": {
+    "install:all": "cd curi-cuisine && npm install",
+    "dev": "node server.js",
+    "dev:client": "cd curi-cuisine && npm run dev",
+    "dev:full": "concurrently \"npm run dev\" \"npm run dev:client\"",
+    "build": "cd curi-cuisine && npm run build",
+    "start": "npm run build && node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2"
+  }
+}

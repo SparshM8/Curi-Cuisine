@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Full Stack: Dev (server + client)",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "npm run dev:full"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "Backend: Dev (server.js)",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "npm run dev"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Frontend: Dev (Vite)",
+      "type": "shell",
+      "command": "cmd",
+      "args": ["/c", "npm run dev:client"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    }
+  ]
+}
