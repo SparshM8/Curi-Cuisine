@@ -173,14 +173,14 @@ const visionHandler = require('./curi-cuisine/api/vision');
 // API routes with basic validation wrappers
 app.post('/api/generate', async (req, res) => {
   if (!process.env.GEMINI_API_KEY) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not set in environment.' });
+    return res.status(400).json({ error: 'GEMINI_API_KEY not set in environment.' });
   }
   return generateHandler.default(req, res);
 });
 
 app.post('/api/vision', async (req, res) => {
   if (!process.env.GOOGLE_VISION_KEY) {
-    return res.status(500).json({ error: 'GOOGLE_VISION_KEY not set in environment.' });
+    return res.status(400).json({ error: 'GOOGLE_VISION_KEY not set in environment.' });
   }
   return visionHandler.default(req, res);
 });
@@ -198,6 +198,7 @@ app.post('/api/analyze', async (req, res) => {
 app.post('/api/translate', async (req, res) => {
   if (!process.env.GEMINI_API_KEY) {
     console.warn('GEMINI_API_KEY not set; translate will echo original text');
+    return res.json({ text: req.body?.text || '' });
   }
   return translateHandler.default(req, res);
 });

@@ -114,6 +114,23 @@ For the **camera ingredient scanner** feature, you can also get a free Google Cl
 
 ---
 
+## 🖼️ Optional: Local TFJS Classifier
+
+If you don't want to use the Cloud Vision API, the app can run an optional local image classifier (MobileNet) in-browser using TensorFlow.js. This avoids sending images to a remote service but adds a weighty dependency to the client bundle.
+
+To enable local TFJS classification:
+1. From the project root run:
+```bash
+cd curi-cuisine
+npm install @tensorflow/tfjs @tensorflow-models/mobilenet
+```
+2. In the app UI, open Camera Scanner and toggle "Use local TFJS classifier" if the banner indicates Vision is not configured.
+3. Restart the dev server to pick up bundle changes.
+
+Note: TFJS models increase the client bundle size and may be slower on older devices; prefer the Cloud Vision API for best results.
+
+---
+
 ## ❓ Troubleshooting
 
 ### "Invalid API Key" Error
