@@ -11,7 +11,8 @@ export default function RecipePanel() {
   const [fallbackUsed, setFallbackUsed] = useState(false);
   const [saveNote, setSaveNote] = useState("");
   const [saveOk, setSaveOk] = useState(true);
-  const [hasAI, setHasAI] = useState(true);
+  const [hasAI, setHasAI] = useState(false);
+  const [hasLLM, setHasLLM] = useState(false); // true when LLM endpoint responds OK
     const [model, setModel] = useState("gemini-1.5-flash");
   const [creativity, setCreativity] = useState(0.9); // temperature
   const [nutrition, setNutrition] = useState(null);
@@ -46,6 +47,14 @@ export default function RecipePanel() {
         const j = await res.json();
         setHasAI(Boolean(j?.hasGeminiKey));
       } catch (_) { /* ignore */ }
+      try {
+        // Quick connectivity check for the LLM backend
+        const p = await fetch('/api/diagnose/llm');
+        if (p.ok) {
+          const pj = await p.json();
+          setHasLLM(Boolean(pj?.ok));
+        } else setHasLLM(false);
+      } catch (_) { setHasLLM(false); }
     })();
   }, []);
 
@@ -138,8 +147,8 @@ export default function RecipePanel() {
       const offline = buildOfflineRecipe(ingredients, query);
       setRecipe(offline);
       setFallbackUsed(true);
-      // Keep an unobtrusive note for visibility; avoid red error block
-      setError("");
+      // Keep an unobtrusive note for visibility; but show error details so users can act
+      setError(e?.message || 'AI generation failed');
       // Attempt heuristic analysis on offline text as well
       try {
         setAnalyzing(true);
@@ -225,12 +234,12 @@ export default function RecipePanel() {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-2 gap-3 w-full md:w-auto md:min-w-[320px]">
           <div>
-              <label className="block text-xs font-semibold text-header mb-1">AI Model {!hasAI && <span className="text-amber-600">(Demo)</span>}</label>
+              <label className="block text-xs font-semibold text-header mb-1">AI Model {!hasAI && <span className="text-amber-600">(Demo)</span>} {!hasLLM && hasAI && <span className="text-red-600">(Key present but blocked)</span>}</label>
             <select
               value={model}
               onChange={e => setModel(e.target.value)}
               className="w-full md:w-48 h-12 px-3 rounded-xl border border-header/15 bg-white/70 focus:outline-none focus:ring-2 focus:ring-accent/60 text-sm"
-                disabled={!hasAI}
+                disabled={!hasAI || !hasLLM}
             >
                 <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental) ⚡</option>
                 <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast) 🚀</option>
@@ -290,7 +299,7 @@ export default function RecipePanel() {
             </div>
           </div>
         )}
-      {error && <p className="mt-4 text-red-600 font-semibold text-sm bg-red-100/50 p-3 rounded-lg">{error}</p>}
+          {error && <p className="mt-4 text-red-600 font-semibold text-sm bg-red-100/50 p-3 rounded-lg">{error}</p>}
       {fallbackUsed && (
         <div className="mt-4 text-amber-900 bg-amber-50 border border-amber-200 p-3 rounded-lg text-sm">
           AI offline or blocked — showing a locally generated demo recipe so you can keep going.

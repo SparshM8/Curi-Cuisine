@@ -33,7 +33,15 @@ module.exports.default = async function handler(req, res) {
 
     const data = await response.json();
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || 'Upstream error' });
+      const upstream = (data && data.error) ? data.error.message || JSON.stringify(data.error) : data?.error || 'Upstream error';
+      // Provide friendlier messages for the two common issues
+      if (response.status === 403) {
+        return res.status(403).json({ error: 'Your API key cannot access the Generative Language API. Check the key or enable the API for your Google Cloud project.' });
+      }
+      if (response.status === 404) {
+        return res.status(404).json({ error: upstream || 'Model not supported by the current API version.' });
+      }
+      return res.status(response.status).json({ error: upstream || 'Upstream error' });
     }
     let text = 'No recipe found.';
     const cand = data.candidates?.[0]?.content?.parts || [];
