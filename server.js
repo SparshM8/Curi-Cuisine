@@ -209,7 +209,14 @@ app.get('/api/diagnose/llm', async (_req, res) => {
     if (!process.env.GEMINI_API_KEY) return res.status(400).json({ ok: false, reason: 'missing_key' });
     const ping = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${process.env.GEMINI_API_KEY}`);
     const status = ping.status;
-    res.json({ ok: status >= 200 && status < 300, status });
+    let models = null;
+    try {
+      const j = await ping.json();
+      models = j?.models || null;
+    } catch (_) {
+      // ignore
+    }
+    res.json({ ok: status >= 200 && status < 300, status, models });
   } catch (e) {
     res.status(500).json({ ok: false, error: e.message });
   }
