@@ -13,7 +13,9 @@ export default function RecipePanel() {
   const [saveOk, setSaveOk] = useState(true);
   const [hasAI, setHasAI] = useState(false);
   const [hasLLM, setHasLLM] = useState(false); // true when LLM endpoint responds OK
+  const [forceDemo, setForceDemo] = useState(false);
     const [model, setModel] = useState("gemini-1.5-flash");
+    const [availableModels, setAvailableModels] = useState([]);
   const [creativity, setCreativity] = useState(0.9); // temperature
   const [nutrition, setNutrition] = useState(null);
   const [subs, setSubs] = useState(null);
@@ -53,6 +55,13 @@ export default function RecipePanel() {
         if (p.ok) {
           const pj = await p.json();
           setHasLLM(Boolean(pj?.ok));
+          const list = pj?.models || [];
+          if (Array.isArray(list) && list.length) {
+            const names = list.map(m => m.name).filter(Boolean);
+            setAvailableModels(names);
+            // If the currently selected model isn't available, pick first
+            if (names.length && !names.includes(model)) setModel(names[0]);
+          }
         } else setHasLLM(false);
       } catch (_) { setHasLLM(false); }
     })();
@@ -77,6 +86,13 @@ export default function RecipePanel() {
 
   const generateRecipe = async () => {
     if (!query.trim()) return;
+    if (forceDemo) {
+      const offline = buildOfflineRecipe(ingredients, query);
+      setRecipe(offline);
+      setFallbackUsed(true);
+      setError('Using offline demo mode');
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -241,12 +257,24 @@ export default function RecipePanel() {
               className="w-full md:w-48 h-12 px-3 rounded-xl border border-header/15 bg-white/70 focus:outline-none focus:ring-2 focus:ring-accent/60 text-sm"
                 disabled={!hasAI || !hasLLM}
             >
-                <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental) ⚡</option>
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast) 🚀</option>
-                <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B (Fastest) ⚡⚡</option>
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Best Quality) 👑</option>
-                <option value="gemini-pro">Gemini Pro (Legacy) 📝</option>
+              {availableModels.length ? (
+                availableModels.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))
+              ) : (
+                <>
+                  <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental) ⚡</option>
+                  <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast) 🚀</option>
+                  <option value="gemini-1.5-flash-8b">Gemini 1.5 Flash-8B (Fastest) ⚡⚡</option>
+                  <option value="gemini-1.5-pro">Gemini 1.5 Pro (Best Quality) 👑</option>
+                  <option value="gemini-pro">Gemini Pro (Legacy) 📝</option>
+                </>
+              )}
             </select>
+          </div>
+          <div className="flex items-center gap-2 text-xs mt-2">
+            <input id="forceDemo" type="checkbox" checked={forceDemo} onChange={(e) => setForceDemo(e.target.checked)} />
+            <label htmlFor="forceDemo" className="text-xs text-header/70">Force Demo Mode (use offline recipes)</label>
           </div>
           <div>
             <label className="block text-xs font-semibold text-header mb-1">Creativity</label>
