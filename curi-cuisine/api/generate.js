@@ -76,11 +76,14 @@ module.exports.default = async function handler(req, res) {
       // Improve error messages for rate-limit and quota issues
       const body = (data && data.error) ? data.error.message || JSON.stringify(data.error) : JSON.stringify(data);
       console.error('generate upstream error', response.status, body);
-      if (response.status === 429) {
+      if (response.status === 429 || /quota/i.test(body)) {
         const retryAfter = response.headers && response.headers.get ? response.headers.get('retry-after') : null;
-        return res.status(429).json({ error: 'Quota limit reached; please retry later', retryAfter, details: body });
+        return res.status(429).json({ error: 'Quota limit reached; please check your Google Cloud billing/quota and try again', retryAfter, reason: 'quota_exceeded', details: body, docs: 'https://ai.google.dev/gemini-api/docs/rate-limits' });
       }
       if (response.status === 403) {
+        if (/unregistered callers|method doesn.t allow unregistered callers/i.test(body)) {
+          return res.status(403).json({ error: 'Your API key does not have permission to call the Generative Language API; enable the API and ensure your key is valid', reason: 'forbidden', details: body, docs: 'https://developers.google.com/ai/apis/generative/overview' });
+        }
         return res.status(403).json({ error: 'Your API key cannot access the Generative Language API. Check the key or enable the API for your Google Cloud project.' });
       }
       console.error('generate upstream error', response.status, data?.error?.message || data);
