@@ -57,8 +57,9 @@ module.exports.default = async function handler(req, res) {
 
     // Normalize modelName: accept both 'models/name' and 'name'
     const apiModelPath = modelName && modelName.startsWith('models/') ? modelName : `models/${modelName}`;
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/${encodeURIComponent(apiModelPath)}:generateContent?key=${apiKey}`,
+    const modelPart = apiModelPath.replace(/^models\//, '');
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelPart)}:generateContent?key=${apiKey}`;
+    const response = await fetch(url,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -99,8 +100,9 @@ module.exports.default = async function handler(req, res) {
               console.error('generate will retry with candidate model', candidate.name);
               // Try again with a safe candidate model name
               const retryModelPath = candidate.name && candidate.name.startsWith('models/') ? candidate.name : `models/${candidate.name}`;
+              const retryModelPart = retryModelPath.replace(/^models\//, '');
               const retry = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/${encodeURIComponent(retryModelPath)}:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(retryModelPart)}:generateContent?key=${apiKey}`,
                 {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
