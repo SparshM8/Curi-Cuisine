@@ -33,6 +33,7 @@ module.exports.default = async function handler(req, res) {
 
     const data = await response.json();
     if (!response.ok) {
+      console.error('generate upstream error', response.status, data?.error?.message || data);
       const upstream = (data && data.error) ? data.error.message || JSON.stringify(data.error) : data?.error || 'Upstream error';
       // Provide friendlier messages for the two common issues
       if (response.status === 403) {
@@ -47,6 +48,7 @@ module.exports.default = async function handler(req, res) {
             const models = j?.models || [];
             const candidate = models.find(m => m.name && /gemini|bison/i.test(m.name));
             if (candidate && candidate.name) {
+              console.error('generate will retry with candidate model', candidate.name);
               // Try again with a safe candidate model name
               const retry = await fetch(
                 `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candidate.name)}:generateContent?key=${apiKey}`,
