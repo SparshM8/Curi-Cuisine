@@ -55,8 +55,10 @@ module.exports.default = async function handler(req, res) {
       }
     }
 
+    // Normalize modelName: accept both 'models/name' and 'name'
+    const apiModelPath = modelName && modelName.startsWith('models/') ? modelName : `models/${modelName}`;
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelName)}:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/${encodeURIComponent(apiModelPath)}:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -96,8 +98,9 @@ module.exports.default = async function handler(req, res) {
             if (candidate && candidate.name) {
               console.error('generate will retry with candidate model', candidate.name);
               // Try again with a safe candidate model name
+              const retryModelPath = candidate.name && candidate.name.startsWith('models/') ? candidate.name : `models/${candidate.name}`;
               const retry = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candidate.name)}:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/${encodeURIComponent(retryModelPath)}:generateContent?key=${apiKey}`,
                 {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
