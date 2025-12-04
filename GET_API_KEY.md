@@ -127,6 +127,26 @@ npm install @tensorflow/tfjs @tensorflow-models/mobilenet
 2. In the app UI, open Camera Scanner and toggle "Use local TFJS classifier" if the banner indicates Vision is not configured.
 3. Restart the dev server to pick up bundle changes.
 
+---
+
+## 🔁 Alternative Cloud Vision Providers (Optional)
+
+If you don't want to use Google Cloud Vision, you can use other providers by adding settings in your `.env`:
+
+```env
+VISION_PROVIDER=clarifai   # 'google' (default), 'azure', 'clarifai', or 'local'
+VISION_API_KEY=YOUR_PROVIDER_KEY
+# Azure also needs the endpoint
+VISION_AZURE_ENDPOINT=https://<your-region>.api.cognitive.microsoft.com
+CLARIFAI_MODEL=general-image-recognition  # optional
+```
+
+Supported providers and quick setup:
+- Clarifai: Faster label detection and generous free tier. Create an API key at https://www.clarifai.com/ and set `VISION_PROVIDER=clarifai` and `VISION_API_KEY`.
+- Azure Computer Vision: Accurate and enterprise-grade. Enable the Computer Vision resource in Azure Portal and set `VISION_PROVIDER=azure`, `VISION_API_KEY` and `VISION_AZURE_ENDPOINT`.
+- Google Cloud Vision: Works as before — set `VISION_PROVIDER=google` and `GOOGLE_VISION_KEY`.
+
+After changing `.env`, restart the server and refresh the site. The Camera Scanner component will show a note and optionally enable a local TFJS classifier.
 Note: TFJS models increase the client bundle size and may be slower on older devices; prefer the Cloud Vision API for best results.
 
 ---

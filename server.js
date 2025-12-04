@@ -58,10 +58,20 @@ app.get('/api/health', (_req, res) => {
 // Quick config check (do not leak actual keys)
 app.get('/api/config-check', (_req, res) => {
   const key = process.env.GEMINI_API_KEY;
+  const visionProvider = (process.env.VISION_PROVIDER || '').toLowerCase();
+  const hasVision = (() => {
+    if (!visionProvider) return Boolean(process.env.GOOGLE_VISION_KEY);
+    if (visionProvider === 'google') return Boolean(process.env.GOOGLE_VISION_KEY);
+    if (visionProvider === 'azure') return Boolean(process.env.VISION_API_KEY && process.env.VISION_AZURE_ENDPOINT);
+    if (visionProvider === 'clarifai') return Boolean(process.env.VISION_API_KEY);
+    if (visionProvider === 'local') return false; // local runs in browser
+    return false;
+  })();
   res.json({
     hasGeminiKey: Boolean(key),
     keyLength: key ? key.length : 0,
-    hasVisionKey: Boolean(process.env.GOOGLE_VISION_KEY),
+    hasVisionKey: hasVision,
+    visionProvider: visionProvider || 'google',
     port: process.env.PORT || 3001,
   });
 });
@@ -179,9 +189,7 @@ app.post('/api/generate', async (req, res) => {
 });
 
 app.post('/api/vision', async (req, res) => {
-  if (!process.env.GOOGLE_VISION_KEY) {
-    return res.status(400).json({ error: 'GOOGLE_VISION_KEY not set in environment.' });
-  }
+  // Don't hard-block on Google Vision key — handler supports multiple providers.
   return visionHandler.default(req, res);
 });
 
