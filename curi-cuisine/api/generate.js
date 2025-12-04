@@ -59,6 +59,7 @@ module.exports.default = async function handler(req, res) {
     const apiModelPath = modelName && modelName.startsWith('models/') ? modelName : `models/${modelName}`;
     const modelPart = apiModelPath.replace(/^models\//, '');
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelPart)}:generateContent?key=${apiKey}`;
+    console.error('generate calling', url, 'modelPart', modelPart);
     const response = await fetch(url,
       {
         method: 'POST',
