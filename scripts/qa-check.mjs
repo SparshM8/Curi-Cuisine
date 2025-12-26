@@ -25,9 +25,13 @@ async function checkIngredients() {
 
 async function checkGenerate() {
   const res = await fetch(`${BASE}/api/generate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ query: 'Make me a 2-ingredient salad' }) });
-  if (res.status === 400) {
-    // no key configured
-    console.warn('/api/generate returned 400 (likely missing GEMINI key)');
+  if (res.status === 400 || res.status === 403) {
+    // no key configured or invalid key
+    console.warn(`/api/generate returned ${res.status} (missing or invalid GEMINI key)`);
+    return;
+  }
+  if (res.status === 429) {
+    console.warn('/api/generate returned 429 (quota/rate limit); skipping for now');
     return;
   }
   assert(res.ok, '/api/generate not ok');
