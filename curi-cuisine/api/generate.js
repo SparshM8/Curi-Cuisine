@@ -58,6 +58,15 @@ module.exports.default = async function handler(req, res) {
     // Normalize modelName: accept both 'models/name' and 'name'
     const apiModelPath = modelName && modelName.startsWith('models/') ? modelName : `models/${modelName}`;
     const modelPart = apiModelPath.replace(/^models\//, '');
+
+    // If the chosen model name looks like an embedding model or another non-generation model,
+    // return a demo fallback immediately so the user gets a helpful response instead of an upstream error.
+    if (/embed|embedding|embedding-/i.test(modelPart)) {
+      console.warn('generate: requested model appears to be an embedding/non-generation model:', modelPart);
+      const demo = `# Quick Demo Recipe\n\nAI offline or blocked — showing a locally generated demo recipe so you can keep going.\n\n## Ingredients\n- 1 cup rice\n- 2 tbsp olive oil\n- 1 clove garlic (minced)\n\n## Instructions\n1. Heat oil in a pan over medium heat.\n2. Add garlic and sauté until fragrant.\n3. Add rice and 2 cups water; simmer until tender.\n4. Season with salt and pepper and serve.\n\n## Sustainability Tip\n- Use vegetable scraps to make a simple stock for future soups.`;
+      return res.status(200).json({ recipe: demo, offline: true, message: 'AI offline or blocked — showing a locally generated demo recipe so you can keep going.' });
+    }
+
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelPart)}:generateContent?key=${apiKey}`;
     console.error('generate calling', url, 'modelPart', modelPart);
     const requestBody = {
