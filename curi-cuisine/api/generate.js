@@ -60,14 +60,16 @@ module.exports.default = async function handler(req, res) {
     const modelPart = apiModelPath.replace(/^models\//, '');
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelPart)}:generateContent?key=${apiKey}`;
     console.error('generate calling', url, 'modelPart', modelPart);
+    const requestBody = {
+      contents: [{ parts: [{ text: query }] }],
+      generationConfig: mergedGenCfg
+    };
+    console.error('generate request body', JSON.stringify(requestBody).slice(0, 200));
     const response = await fetch(url,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: query }] }],
-          generationConfig: mergedGenCfg
-        })
+        body: JSON.stringify(requestBody)
       }
     );
 

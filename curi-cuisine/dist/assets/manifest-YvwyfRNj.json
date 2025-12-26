@@ -1,0 +1,16 @@
+{
+  "short_name": "CuriCuisine",
+  "name": "Curi-Cuisine: AI Recipe & Food Waste Saver",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#FDFBF8",
+  "theme_color": "#fbbf24",
+  "description": "AI-powered smart recipe generator to reduce food waste."
+}

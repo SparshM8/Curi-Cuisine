@@ -37,8 +37,24 @@
    npm run dev:full
    ```
 
+   **Optional (local image classification):**
+   If you prefer to run image classification in the browser instead of using a cloud Vision API, install the TFJS packages inside the client:
+   ```bash
+   cd curi-cuisine
+   npm install @tensorflow/tfjs @tensorflow-models/mobilenet
+   ```
+   Then enable "Use local TFJS classifier" in the Camera Scanner UI.
+
 - Frontend: [http://localhost:5173](http://localhost:5173)
 - Backend: [http://localhost:3001](http://localhost:3001)
+
+Run a quick smoke test suite from the project root:
+
+```bash
+npm run qa
+```
+
+This will exercise core API endpoints (health, generate, translate, recipes) and exit non-zero if any check fails.
 
 ---
 

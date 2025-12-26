@@ -1,0 +1,1 @@
+import{_ as t}from"./index-C8lhXN_D.js";async function r(i){return await t(()=>import("@tensorflow/tfjs"),[]),(await(await(await t(()=>import("@tensorflow-models/mobilenet"),[])).load()).classify(i)).map(o=>o.className)}export{r as classifyImage};

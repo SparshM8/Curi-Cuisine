@@ -6,6 +6,7 @@
     "dev": "node server.js",
     "dev:client": "cd curi-cuisine && npm run dev",
     "dev:full": "concurrently \"npm run dev\" \"npm run dev:client\"",
+    "qa": "node scripts/qa-check.mjs",
     "build": "cd curi-cuisine && npm run build",
     "start": "npm run build && node server.js"
   },
