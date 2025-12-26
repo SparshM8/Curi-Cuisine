@@ -75,9 +75,20 @@ module.exports.default = async function handler(req, res) {
 
     const data = await response.json();
     if (!response.ok) {
-      // Improve error messages for rate-limit and quota issues
+      // Build a normalized error string for detection
       const body = (data && data.error) ? data.error.message || JSON.stringify(data.error) : JSON.stringify(data);
+      const bodyLower = String(body || '').toLowerCase();
       console.error('generate upstream error', response.status, body);
+
+      // If upstream indicates a model type that does not support generateContent (e.g., an embedding model)
+      // or the model is not found for this API version, return a friendly offline/demo recipe so the app remains usable.
+      if (/embedding|not found for api version|not supported for generatecontent|model not found/i.test(bodyLower)) {
+        console.warn('generate: upstream model unsupported for generation — returning demo fallback');
+        const demo = `# Quick Demo Recipe\n\nAI offline or blocked — showing a locally generated demo recipe so you can keep going.\n\n## Ingredients\n- 1 cup rice\n- 2 tbsp olive oil\n- 1 clove garlic (minced)\n\n## Instructions\n1. Heat oil in a pan over medium heat.\n2. Add garlic and sauté until fragrant.\n3. Add rice and 2 cups water; simmer until tender.\n4. Season with salt and pepper and serve.\n\n## Sustainability Tip\n- Use vegetable scraps to make a simple stock for future soups.`;
+        return res.status(200).json({ recipe: demo, offline: true, message: 'AI offline or blocked — showing a locally generated demo recipe so you can keep going.' });
+      }
+
+      // Improve error messages for rate-limit and quota issues
       if (response.status === 429 || /quota/i.test(body)) {
         const retryAfter = response.headers && response.headers.get ? response.headers.get('retry-after') : null;
         return res.status(429).json({ error: 'Quota limit reached; please check your Google Cloud billing/quota and try again', retryAfter, reason: 'quota_exceeded', details: body, docs: 'https://ai.google.dev/gemini-api/docs/rate-limits' });
