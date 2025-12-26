@@ -80,7 +80,17 @@ This will exercise core API endpoints (health, generate, translate, recipes) and
 
 ---
 
-## 📚 Further Reading
+## � Screenshots
+
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
+![alt text](image-4.png)
+
+---
+
+## �📚 Further Reading
 - [Strategic Report](curi-cuisine/STRATEGIC_REPORT.md)
 - [Frontend Quick Start](curi-cuisine/README.md)
 - [How to Get Your API Key](GET_API_KEY.md)
